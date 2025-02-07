@@ -32,7 +32,7 @@ const onFrame = () => {
 		document.getElementById("asleep").style.display = "block"
 		//make meow tbd
 
-		});
+		
 		
 	}, 5000)
     }
