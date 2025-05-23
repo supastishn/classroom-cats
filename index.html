@@ -25,6 +25,10 @@
         
         <main>
             <div class="cat-container">
+                <div class="credits-bar">
+                    <span class="credits-label"><i class="fas fa-star"></i> Class Credits:</span>
+                    <span id="credits-value">0</span>
+                </div>
                 <div class="cat-status">
                     <div class="status-indicator">
                         <i class="fas fa-moon"></i>
@@ -86,6 +90,41 @@
             <p>This website uses your microphone to detect noise levels and change the cat's behavior accordingly.</p>
             <p>Please allow microphone access when prompted to enjoy the full experience.</p>
             <button id="start-button" class="primary-button">Start Experience</button>
+        </div>
+    </div>
+
+    <button id="settings-button" class="settings-button"><i class="fas fa-cog"></i> Settings</button>
+
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content settings-modal-content">
+            <h2><i class="fas fa-cog"></i> Settings</h2>
+            <form id="settings-form">
+                <label>
+                    Awake Threshold (dB):
+                    <input type="number" id="awake-threshold" step="1" min="-100" max="0">
+                </label>
+                <label>
+                    Run Away Threshold (dB):
+                    <input type="number" id="run-threshold" step="1" min="-100" max="0">
+                </label>
+                <label>
+                    Seconds of Silence for Credit:
+                    <input type="number" id="credit-interval" step="1" min="1">
+                </label>
+                <label>
+                    Credits Gained per Interval:
+                    <input type="number" id="credit-gain" step="1" min="1">
+                </label>
+                <label>
+                    Credits Lost per Interval:
+                    <input type="number" id="credit-loss" step="1" min="1">
+                </label>
+                <div class="settings-actions">
+                    <button type="submit" class="primary-button"><i class="fas fa-save"></i> Save</button>
+                    <button type="button" id="settings-cancel" class="reset-button">Cancel</button>
+                    <button type="button" id="settings-reset-default" class="reset-button"><i class="fas fa-undo"></i> Reset to Default</button>
+                </div>
+            </form>
         </div>
     </div>
 

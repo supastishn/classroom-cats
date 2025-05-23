@@ -377,6 +377,36 @@ main {
     color: var(--primary-color);
 }
 
+/* Credits Bar Styles */
+.credits-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    background: var(--card-color);
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-bottom: 18px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    gap: 10px;
+}
+
+.credits-label {
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#credits-value {
+    color: var(--quiet-color);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-left: 6px;
+    transition: color 0.3s;
+}
+
 /* Footer Styles */
 footer {
     margin-top: 30px;
@@ -425,6 +455,53 @@ footer {
 
 .hidden {
     display: none;
+}
+
+/* Settings Button and Modal */
+.settings-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.settings-button:hover {
+    background: #7c4dff;
+}
+
+.settings-modal-content label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    text-align: left;
+}
+
+.settings-modal-content input[type="number"] {
+    width: 100%;
+    padding: 6px 10px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.settings-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-end;
 }
 
 /* Responsive Adjustments */

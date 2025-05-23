@@ -9,6 +9,7 @@ const cat = document.getElementById('cat');
 const statusText = document.querySelector('.status-text');
 const statusIcon = document.querySelector('.status-indicator i');
 const resetButton = document.getElementById('reset-button');
+const creditsValue = document.getElementById('credits-value');
 
 // Audio context and analyzer variables
 let audioContext;
@@ -18,6 +19,8 @@ let javascriptNode;
 let isListening = false;
 let animationRunning = false;
 let randomMovementInterval = null;
+let creditsInterval = null;
+let creditsLossInterval = null;
 let lastNoiseLevel = -100; // Initial value
 
 // Noise thresholds
@@ -32,6 +35,17 @@ const CAT_STATES = {
 };
 
 let currentState = CAT_STATES.SLEEPING;
+let credits = 0;
+
+// Hide welcome modal if microphone access is already allowed
+if (navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({ name: 'microphone' }).then(function(result) {
+        if (result.state === 'granted') {
+            modal.classList.add('hidden');
+            initAudioContext();
+        }
+    });
+}
 
 // Initialize the application
 startButton.addEventListener('click', () => {
@@ -57,6 +71,10 @@ resetButton.addEventListener('click', () => {
     statusText.textContent = 'Cat is sleeping peacefully';
     statusIcon.className = 'fas fa-moon';
     cat.classList.add(CAT_STATES.SLEEPING);
+    
+    // Reset credits
+    credits = 0;
+    updateCreditsDisplay();
 });
 
 // Initialize audio context
@@ -171,20 +189,15 @@ function updateNoiseMeter(db) {
 
 // Update cat state based on noise level
 function updateCatState(db) {
-    // Save the last noise level for reference
     lastNoiseLevel = db;
-    
-    // Determine cat state based on noise level
     let newState;
-    if (db > NOISE_THRESHOLD_RUN) {
+    if (db > window.NOISE_THRESHOLD_RUN) {
         newState = CAT_STATES.RUNNING;
-    } else if (db > NOISE_THRESHOLD_AWAKE) {
+    } else if (db > window.NOISE_THRESHOLD_AWAKE) {
         newState = CAT_STATES.AWAKE;
     } else {
         newState = CAT_STATES.SLEEPING;
     }
-    
-    // Only update if state has changed
     if (newState !== currentState) {
         currentState = newState;
         updateCatUI(currentState);
@@ -225,6 +238,9 @@ function updateCatUI(state) {
             startRandomMovement();
             break;
     }
+    
+    // Handle credits based on new state
+    handleCreditsForState(state);
 }
 
 // Reset cat to sleeping state
@@ -311,6 +327,150 @@ function stopRandomMovement() {
         randomMovementInterval = null;
     }
 }
+
+// --- Credits Feature ---
+function startCreditsGain() {
+    stopCreditsGain();
+    creditsInterval = setInterval(() => {
+        credits += window.CREDIT_GAIN;
+        updateCreditsDisplay();
+    }, window.CREDIT_INTERVAL * 1000); // Customizable interval
+}
+
+function stopCreditsGain() {
+    if (creditsInterval) {
+        clearInterval(creditsInterval);
+        creditsInterval = null;
+    }
+}
+
+function startCreditsLoss() {
+    stopCreditsLoss();
+    creditsLossInterval = setInterval(() => {
+        credits = Math.max(0, credits - window.CREDIT_LOSS); // Customizable loss
+        updateCreditsDisplay();
+    }, 1000);
+}
+
+function stopCreditsLoss() {
+    if (creditsLossInterval) {
+        clearInterval(creditsLossInterval);
+        creditsLossInterval = null;
+    }
+}
+
+function updateCreditsDisplay() {
+    creditsValue.textContent = credits;
+    if (currentState === CAT_STATES.RUNNING) {
+        creditsValue.style.color = 'var(--loud-color)';
+    } else if (currentState === CAT_STATES.AWAKE) {
+        creditsValue.style.color = 'var(--moderate-color)';
+    } else {
+        creditsValue.style.color = 'var(--quiet-color)';
+    }
+}
+
+// Call this whenever the cat state changes
+function handleCreditsForState(state) {
+    if (state === CAT_STATES.SLEEPING) {
+        startCreditsGain();
+        stopCreditsLoss();
+    } else if (state === CAT_STATES.AWAKE) {
+        stopCreditsGain();
+        stopCreditsLoss();
+    } else if (state === CAT_STATES.RUNNING) {
+        stopCreditsGain();
+        startCreditsLoss();
+    }
+}
+// --- End Credits Feature ---
+
+// --- Settings Feature ---
+const settingsButton = document.getElementById('settings-button');
+const settingsModal = document.getElementById('settings-modal');
+const settingsForm = document.getElementById('settings-form');
+const settingsCancel = document.getElementById('settings-cancel');
+const awakeInput = document.getElementById('awake-threshold');
+const runInput = document.getElementById('run-threshold');
+const creditIntervalInput = document.getElementById('credit-interval');
+const creditGainInput = document.getElementById('credit-gain');
+const creditLossInput = document.getElementById('credit-loss');
+const settingsResetDefault = document.getElementById('settings-reset-default');
+
+// Default settings
+const DEFAULT_SETTINGS = {
+    awakeThreshold: -65,
+    runThreshold: -45,
+    creditInterval: 2,
+    creditGain: 1,
+    creditLoss: 2
+};
+
+function loadSettings() {
+    const saved = JSON.parse(localStorage.getItem('classroomCatSettings') || 'null');
+    return saved ? { ...DEFAULT_SETTINGS, ...saved } : { ...DEFAULT_SETTINGS };
+}
+
+function saveSettings(settings) {
+    localStorage.setItem('classroomCatSettings', JSON.stringify(settings));
+}
+
+function applySettings(settings) {
+    window.NOISE_THRESHOLD_AWAKE = settings.awakeThreshold;
+    window.NOISE_THRESHOLD_RUN = settings.runThreshold;
+    window.CREDIT_INTERVAL = settings.creditInterval;
+    window.CREDIT_GAIN = settings.creditGain;
+    window.CREDIT_LOSS = settings.creditLoss;
+}
+
+function updateSettingsForm(settings) {
+    awakeInput.value = settings.awakeThreshold;
+    runInput.value = settings.runThreshold;
+    creditIntervalInput.value = settings.creditInterval;
+    creditGainInput.value = settings.creditGain;
+    creditLossInput.value = settings.creditLoss;
+}
+
+// Modal open/close
+settingsButton.addEventListener('click', () => {
+    const settings = loadSettings();
+    updateSettingsForm(settings);
+    settingsModal.classList.remove('hidden');
+});
+settingsCancel.addEventListener('click', () => {
+    settingsModal.classList.add('hidden');
+});
+settingsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newSettings = {
+        awakeThreshold: parseInt(awakeInput.value, 10),
+        runThreshold: parseInt(runInput.value, 10),
+        creditInterval: parseInt(creditIntervalInput.value, 10),
+        creditGain: parseInt(creditGainInput.value, 10),
+        creditLoss: parseInt(creditLossInput.value, 10)
+    };
+    saveSettings(newSettings);
+    applySettings(newSettings);
+    settingsModal.classList.add('hidden');
+    // Restart credits logic to use new settings
+    stopCreditsGain();
+    stopCreditsLoss();
+    handleCreditsForState(currentState);
+});
+// Close modal on outside click
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) settingsModal.classList.add('hidden');
+});
+
+// Reset to default settings
+settingsResetDefault.addEventListener('click', () => {
+    updateSettingsForm(DEFAULT_SETTINGS);
+});
+
+// On load, apply settings
+const initialSettings = loadSettings();
+applySettings(initialSettings);
+// --- End Settings Feature ---
 
 // Handle page visibility changes to manage audio context
 document.addEventListener('visibilitychange', () => {
