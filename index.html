@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Cats</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Classroom Cats</h1>
+            <div class="noise-meter">
+                <div class="noise-label">Classroom Noise Level</div>
+                <div class="meter-container">
+                    <div class="meter-bar">
+                        <div class="meter-fill"></div>
+                    </div>
+                    <div class="noise-value">0 dB</div>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="cat-container">
+                <div class="cat-status">
+                    <div class="status-indicator">
+                        <i class="fas fa-moon"></i>
+                        <span class="status-text">Cat is sleeping peacefully</span>
+                    </div>
+                </div>
+                <div class="cat-scene">
+                    <div id="cat" class="cat sleeping">
+                        <div class="cat-image"></div>
+                    </div>
+                    <div class="desk"></div>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="info-card">
+                    <h2><i class="fas fa-volume-down"></i> Noise Levels</h2>
+                    <div class="noise-levels">
+                        <div class="level">
+                            <span class="level-icon quiet"><i class="fas fa-volume-off"></i></span>
+                            <span class="level-name">Quiet</span>
+                            <span class="level-desc">Cat is sleeping</span>
+                        </div>
+                        <div class="level">
+                            <span class="level-icon moderate"><i class="fas fa-volume-down"></i></span>
+                            <span class="level-name">Moderate</span>
+                            <span class="level-desc">Cat is awake</span>
+                        </div>
+                        <div class="level">
+                            <span class="level-icon loud"><i class="fas fa-volume-up"></i></span>
+                            <span class="level-name">Loud</span>
+                            <span class="level-desc">Cat is running away</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h2><i class="fas fa-info-circle"></i> About</h2>
+                    <p>This classroom cat responds to noise levels detected through your microphone. Keep quiet to let the cat sleep, make moderate noise to wake it up, or be loud to scare it away!</p>
+                    <div class="mic-status">
+                        <span id="mic-status-indicator">Microphone access required</span>
+                        <button id="mic-toggle" class="mic-button">
+                            <i class="fas fa-microphone"></i> Enable Microphone
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Adjust your device's microphone sensitivity in settings if the cat is too sensitive or not responsive enough.</p>
+            <p>© 2025 Classroom Cats | <button id="reset-button" class="reset-button"><i class="fas fa-redo"></i> Reset Cat</button></p>
+        </footer>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Welcome to Classroom Cats!</h2>
+            <p>This website uses your microphone to detect noise levels and change the cat's behavior accordingly.</p>
+            <p>Please allow microphone access when prompted to enjoy the full experience.</p>
+            <button id="start-button" class="primary-button">Start Experience</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
